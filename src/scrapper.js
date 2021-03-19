@@ -17,7 +17,7 @@ function start(logger, tgBot, dcBot, settings) {
 
     // Start searching starting from this date. FIRST RUN ONLY
     if(scrapper.startLastBuildDate)
-        oldBuildDate = moment(scrapper.startLastBuildDate);
+        oldBuildDate = moment(new Date(scrapper.startLastBuildDate));
 
     logger.info(`Scrapper Starting...`);
 
@@ -27,14 +27,14 @@ function start(logger, tgBot, dcBot, settings) {
         let feed = await parser.parseURL(scrapper.url);
 
         // Save the latest build date
-        currentBuildDate = moment(feed.lastBuildDate);
+        currentBuildDate = moment(new Date(feed.lastBuildDate));
 
         // Not first run and date updated
         if(oldBuildDate != null && currentBuildDate > oldBuildDate) {
             feed.items.forEach(async item => {
 
                 // New rss item has been added
-                if(moment(item.pubDate) > oldBuildDate){
+                if(moment(new Date(item.pubDate)) > oldBuildDate){
                     logger.info(`New Post Found: ${item.title.trim()} (${item.pubDate.trim()})`);
 
                     // Send to telegram channel/group
