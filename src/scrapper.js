@@ -23,44 +23,48 @@ function start(logger, tgBot, dcBot, settings) {
 
     setInterval(async () => {
 
-        // Parse feed
-        let feed = await parser.parseURL(scrapper.url);
+        try {
+            // Parse feed
+            let feed = await parser.parseURL(scrapper.url);
 
-        // Save the latest build date
-        currentBuildDate = moment(new Date(feed.lastBuildDate));
+            // Save the latest build date
+            currentBuildDate = moment(new Date(feed.lastBuildDate));
 
-        // Not first run and date updated
-        if(oldBuildDate != null && currentBuildDate > oldBuildDate) {
-            feed.items.forEach(async item => {
+            // Not first run and date updated
+            if (oldBuildDate != null && currentBuildDate > oldBuildDate) {
+                feed.items.forEach(async item => {
 
-                // New rss item has been added
-                if(moment(new Date(item.pubDate)) > oldBuildDate){
-                    logger.info(`New Post Found: ${item.title.trim()} (${item.pubDate.trim()})`);
+                    // New rss item has been added
+                    if (moment(new Date(item.pubDate)) > oldBuildDate) {
+                        logger.info(`New Post Found: ${item.title.trim()} (${item.pubDate.trim()})`);
 
-                    // Send to telegram channel/group
-                    scrapper.chatID.telegram.forEach(async chatID => {
-                        await tgBot.telegram.sendMessage(
-                            chatID,
-                            item.title.trim()+"\n"+item.link.trim()
-                        );
-                    });
-
-                    // Send to discord chat
-                    scrapper.chatID.discord.forEach(async chatID => {
-                        const dcChannel = await dcBot.channels.fetch(chatID).catch(err => {
-                            console.error(`Could not find Discord channel ${chatID}: ${err.message}`);
-                            throw err;
+                        // Send to telegram channel/group
+                        scrapper.chatID.telegram.forEach(async chatID => {
+                            await tgBot.telegram.sendMessage(
+                                chatID,
+                                item.title.trim() + "\n" + item.link.trim()
+                            );
                         });
-                        await dcChannel.send(item.title.trim() + '\n' + item.link.trim());
-                    });
-                }
-            });
+
+                        // Send to discord chat
+                        scrapper.chatID.discord.forEach(async chatID => {
+                            const dcChannel = await dcBot.channels.fetch(chatID).catch(err => {
+                                console.error(`Could not find Discord channel ${chatID}: ${err.message}`);
+                                throw err;
+                            });
+                            await dcChannel.send(item.title.trim() + '\n' + item.link.trim());
+                        });
+                    }
+                });
+            }
+
+            // Save the latest build time
+            oldBuildDate = currentBuildDate;
+        } catch (e) {
+            console.log(e);
         }
 
-        // Save the latest build time
-        oldBuildDate = currentBuildDate;
-    
-    // To milliseconds 
+        // To milliseconds 
     }, (scrapper.loop * 60000))
 
 }
