@@ -32,6 +32,6 @@ scrapper:
   userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 11_2_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36'
   chatID:
     telegram: [-1001319441336] # Remember that Telegram group and channel IDs are negative. Include the `-`
-    discord: ['796192709018517515', '796511430764527627'] #ID must be wrapped in single quotes. Example: '244791815503347712'
+    discord: ['796511430764527627'] #ID must be wrapped in single quotes. Example: '244791815503347712'
   loop: 5 #Number of minutes for the bot to search for new updates
   startLastBuildDate: ''
